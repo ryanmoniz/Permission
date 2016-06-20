@@ -175,6 +175,35 @@ public class Permission: NSObject {
         }
     }
     
+    /**
+     Requests the permission with authorization
+     
+     - parameter callback: The function to be triggered after the user responded to the request.
+     */
+    public func requestWithAuthorization(callback: Callback) {
+        self.callback = callback
+        
+        Queue.main {
+            self.permissionSets.forEach { $0.willRequestPermission(self) }
+        }
+        
+        let status = self.status
+        
+        switch status {
+        case .Authorized:
+            callbacks(status)
+        case .NotDetermined:
+            requestInitialAuthorization()
+            callbacks(status)
+        case .Denied:
+            deniedAlert.present()
+            callbacks(status)
+        case .Disabled:
+            disabledAlert.present()
+            callbacks(status)
+        }
+    }
+    
     private func requestInitialAuthorization() {
         presentPrePermissionAlert ? prePermissionAlert.present() : requestAuthorization(callbacks)
     }
