@@ -22,13 +22,13 @@
 // SOFTWARE.
 //
 
-internal let Application = UIApplication.sharedApplication()
-internal let Defaults = NSUserDefaults.standardUserDefaults()
-internal let NotificationCenter = NSNotificationCenter.defaultCenter()
-internal let Bundle = NSBundle.mainBundle()
+internal let Application = UIApplication.shared
+internal let Defaults = UserDefaults.standard
+internal let NotificationCenter = Foundation.NotificationCenter.default
+internal let Bundle = Foundation.Bundle.main
 
 extension UIApplication {
-    private var topViewController: UIViewController? {
+    fileprivate var topViewController: UIViewController? {
         var vc = delegate?.window??.rootViewController
         
         while let presentedVC = vc?.presentedViewController {
@@ -38,14 +38,14 @@ extension UIApplication {
         return vc
     }
     
-    internal func presentViewController(viewController: UIViewController, animated: Bool = true, completion: (() -> Void)? = nil) {
-        topViewController?.presentViewController(viewController, animated: animated, completion: completion)
+    internal func presentViewController(_ viewController: UIViewController, animated: Bool = true, completion: (() -> Void)? = nil) {
+        topViewController?.present(viewController, animated: animated, completion: completion)
     }
 }
 
-extension NSBundle {
+extension Foundation.Bundle {
     var name: String {
-        return objectForInfoDictionaryKey("CFBundleName") as? String ?? ""
+        return object(forInfoDictionaryKey: "CFBundleName") as? String ?? ""
     }
 }
 
@@ -72,72 +72,72 @@ internal extension Selector {
     static let finishedRequestingNotifications = #selector(Permission.finishedRequestingNotifications)
 }
 
-extension NSUserDefaults {
+extension UserDefaults {
     var requestedLocationAlwaysWithWhenInUse: Bool {
         get {
-            return boolForKey(.requestedLocationAlwaysWithWhenInUse)
+            return bool(forKey: .requestedLocationAlwaysWithWhenInUse)
         }
         set {
-            setBool(newValue, forKey: .requestedLocationAlwaysWithWhenInUse)
+            set(newValue, forKey: .requestedLocationAlwaysWithWhenInUse)
             synchronize()
         }
     }
     
     var requestedNotifications: Bool {
         get {
-            return boolForKey(.requestedNotifications)
+            return bool(forKey: .requestedNotifications)
         }
         set {
-            setBool(newValue, forKey: .requestedNotifications)
+            set(newValue, forKey: .requestedNotifications)
             synchronize()
         }
     }
     
     var requestedMotion: Bool {
         get {
-            return boolForKey(.requestedMotion)
+            return bool(forKey: .requestedMotion)
         }
         set {
-            setBool(newValue, forKey: .requestedMotion)
+            set(newValue, forKey: .requestedMotion)
             synchronize()
         }
     }
     
     var requestedBluetooth: Bool {
         get {
-            return boolForKey(.requestedBluetooth)
+            return bool(forKey: .requestedBluetooth)
         }
         set {
-            setBool(newValue, forKey: .requestedBluetooth)
+            set(newValue, forKey: .requestedBluetooth)
             synchronize()
         }
     }
 }
 
 struct Queue {
-    static func main(block: dispatch_block_t) {
-        dispatch_async(dispatch_get_main_queue(), block)
+    static func main(_ block: @escaping ()->()) {
+        DispatchQueue.main.async(execute: block)
     }
     
-    static func main(after seconds: Double, block: dispatch_block_t) {
-        let time = dispatch_time(DISPATCH_TIME_NOW, Int64(seconds * Double(NSEC_PER_SEC)))
-        dispatch_after(time, dispatch_get_main_queue(), block)
+    static func main(after seconds: Double, block: @escaping ()->()) {
+        let time = DispatchTime.now() + Double(Int64(seconds * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
+        DispatchQueue.main.asyncAfter(deadline: time, execute: block)
     }
 }
 
-extension NSOperationQueue {
-    convenience init(_ qualityOfService: NSQualityOfService) {
+extension OperationQueue {
+    convenience init(_ qualityOfService: QualityOfService) {
         self.init()
         self.qualityOfService = qualityOfService
     }
 }
 
-internal extension NSNotificationCenter {
-    func addObserver(observer: AnyObject, selector: Selector, name: String) {
-        addObserver(observer, selector: selector, name: name, object: nil)
+internal extension Foundation.NotificationCenter {
+    func addObserver(_ observer: AnyObject, selector: Selector, name: String) {
+        addObserver(observer, selector: selector, name: NSNotification.Name(rawValue: name), object: nil)
     }
     
-    func removeObserver(observer: AnyObject, name: String) {
-        removeObserver(observer, name: name, object: nil)
+    func removeObserver(_ observer: AnyObject, name: String) {
+        removeObserver(observer, name: NSNotification.Name(rawValue: name), object: nil)
     }
 }

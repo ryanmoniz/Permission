@@ -22,37 +22,37 @@
 // SOFTWARE.
 //
 
-private var notificationTimer: NSTimer?
+private var notificationTimer: Timer?
 
 internal extension Permission {
     var statusNotifications: PermissionStatus {
-        guard case .Notifications(let settings) = type else { fatalError() }
+        guard case .notifications(let settings) = type else { fatalError() }
         
-        if let types = Application.currentUserNotificationSettings()?.types where types.contains(settings.types) {
-            return .Authorized
+        if let types = Application.currentUserNotificationSettings?.types , types.contains(settings.types) {
+            return .authorized
         }
         
-        return Defaults.requestedNotifications ? .Denied : .NotDetermined
+        return Defaults.requestedNotifications ? .denied : .notDetermined
     }
     
-    func requestNotifications(callback: Callback) {
-        guard case .Notifications(let settings) = type else { fatalError() }
+    func requestNotifications(_ callback: Callback) {
+        guard case .notifications(let settings) = type else { fatalError() }
         
-        NotificationCenter.addObserver(self, selector: .requestingNotifications, name: UIApplicationWillResignActiveNotification)
-        notificationTimer = NSTimer.scheduledTimerWithTimeInterval(1, target: self, selector: .finishedRequestingNotifications, userInfo: nil, repeats: false)
+        NotificationCenter.addObserver(self, selector: .requestingNotifications, name: NSNotification.Name.UIApplicationWillResignActive.rawValue)
+        notificationTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: .finishedRequestingNotifications, userInfo: nil, repeats: false)
         
         Application.registerUserNotificationSettings(settings)
     }
     
     @objc func requestingNotifications() {
-        NotificationCenter.removeObserver(self, name: UIApplicationWillResignActiveNotification)
-        NotificationCenter.addObserver(self, selector: .finishedRequestingNotifications, name: UIApplicationDidBecomeActiveNotification)
+        NotificationCenter.removeObserver(self, name: NSNotification.Name.UIApplicationWillResignActive.rawValue)
+        NotificationCenter.addObserver(self, selector: .finishedRequestingNotifications, name: NSNotification.Name.UIApplicationDidBecomeActive.rawValue)
         notificationTimer?.invalidate()
     }
     
     @objc func finishedRequestingNotifications() {
-        NotificationCenter.removeObserver(self, name: UIApplicationWillResignActiveNotification)
-        NotificationCenter.removeObserver(self, name: UIApplicationDidBecomeActiveNotification)
+        NotificationCenter.removeObserver(self, name: NSNotification.Name.UIApplicationWillResignActive.rawValue)
+        NotificationCenter.removeObserver(self, name: NSNotification.Name.UIApplicationDidBecomeActive.rawValue)
         notificationTimer?.invalidate()
         
         Defaults.requestedNotifications = true

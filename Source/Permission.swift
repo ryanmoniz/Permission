@@ -22,112 +22,112 @@
 // SOFTWARE.
 //
 
-public class Permission: NSObject {
-    public typealias Callback = PermissionStatus -> Void
+open class Permission: NSObject {
+    public typealias Callback = (PermissionStatus) -> Void
 
     /// The permission to access the user's contacts.
     @available(iOS 9.0, *)
-    public static let Contacts = Permission(.Contacts)
+    open static let Contacts = Permission(.contacts)
     
     /// The permission to access the user's address book. (Deprecated in iOS 9.0)
-    public static let AddressBook = Permission(.AddressBook)
+    open static let AddressBook = Permission(.addressBook)
     
     /// The permission to access the user's location when the app is in background.
-    public static let LocationAlways = Permission(.LocationAlways)
+    open static let LocationAlways = Permission(.locationAlways)
     
     /// The permission to access the user's location when the app is in use.
-    public static let LocationWhenInUse = Permission(.LocationWhenInUse)
+    open static let LocationWhenInUse = Permission(.locationWhenInUse)
     
     /// The permission to access the microphone.
-    public static let Microphone = Permission(.Microphone)
+    open static let Microphone = Permission(.microphone)
     
     /// The permission to access the camera.
-    public static let Camera = Permission(.Camera)
+    open static let Camera = Permission(.camera)
     
     /// The permission to access the user's photos.
-    public static let Photos = Permission(.Photos)
+    open static let Photos = Permission(.photos)
     
     /// The permission to access the user's reminders.
-    public static let Reminders = Permission(.Reminders)
+    open static let Reminders = Permission(.reminders)
     
     /// The permission to access the user's events.
-    public static let Events = Permission(.Events)
+    open static let Events = Permission(.events)
     
     /// The permission to access the user's bluetooth.
-    public static let Bluetooth = Permission(.Bluetooth)
+    open static let Bluetooth = Permission(.bluetooth)
     
     /// The permission to access the user's motion.
-    public static let Motion = Permission(.Motion)
+    open static let Motion = Permission(.motion)
     
     /// The permission to send notifications.
-    public static let Notifications: Permission = {
-        let settings = UIUserNotificationSettings(forTypes: [.Badge, .Sound, .Alert], categories: nil)
-        return Permission(.Notifications(settings))
+    open static let Notifications: Permission = {
+        let settings = UIUserNotificationSettings(types: [.badge, .sound, .alert], categories: nil)
+        return Permission(.notifications(settings))
     }()
     
     /// Variable used to retain the notifications permission.
-    private static var notifications: Permission?
+    fileprivate static var notifications: Permission?
     
     /// The permission to send notifications.
-    @warn_unused_result
-    public static func Notifications(types types: UIUserNotificationType, categories: Set<UIUserNotificationCategory>?) -> Permission {
-        let settings  = UIUserNotificationSettings(forTypes: types, categories: categories)
-        notifications = Permission(.Notifications(settings))
+    
+    open static func Notifications(types: UIUserNotificationType, categories: Set<UIUserNotificationCategory>?) -> Permission {
+        let settings  = UIUserNotificationSettings(types: types, categories: categories)
+        notifications = Permission(.notifications(settings))
         return notifications!
     }
     
     /// The permission to send notifications.
-    @warn_unused_result
-    public static func Notifications(types types: UIUserNotificationType) -> Permission {
-        let settings  = UIUserNotificationSettings(forTypes: types, categories: nil)
-        notifications = Permission(.Notifications(settings))
+    
+    open static func Notifications(types: UIUserNotificationType) -> Permission {
+        let settings  = UIUserNotificationSettings(types: types, categories: nil)
+        notifications = Permission(.notifications(settings))
         return notifications!
     }
     
     /// The permission to send notifications.
-    @warn_unused_result
-    public static func Notifications(categories categories: Set<UIUserNotificationCategory>?) -> Permission {
-        let settings  = UIUserNotificationSettings(forTypes: [.Badge, .Sound, .Alert], categories: categories)
-        notifications = Permission(.Notifications(settings))
+    
+    open static func Notifications(categories: Set<UIUserNotificationCategory>?) -> Permission {
+        let settings  = UIUserNotificationSettings(types: [.badge, .sound, .alert], categories: categories)
+        notifications = Permission(.notifications(settings))
         return notifications!
     }
     
     /// The permission domain.
-    public let type: PermissionType
+    open let type: PermissionType
     
     /// The permission status.
-    public var status: PermissionStatus {
+    open var status: PermissionStatus {
         switch type {
-        case .Contacts:          return statusContacts
-        case .AddressBook:       return statusAddressBook
-        case .LocationAlways:    return statusLocationAlways
-        case .LocationWhenInUse: return statusLocationWhenInUse
-        case .Notifications:     return statusNotifications
-        case .Microphone:        return statusMicrophone
-        case .Camera:            return statusCamera
-        case .Photos:            return statusPhotos
-        case .Reminders:         return statusReminders
-        case .Events:            return statusEvents
-        case .Bluetooth:         return statusBluetooth
-        case .Motion:            return statusMotion
+        case .contacts:          return statusContacts
+        case .addressBook:       return statusAddressBook
+        case .locationAlways:    return statusLocationAlways
+        case .locationWhenInUse: return statusLocationWhenInUse
+        case .notifications:     return statusNotifications
+        case .microphone:        return statusMicrophone
+        case .camera:            return statusCamera
+        case .photos:            return statusPhotos
+        case .reminders:         return statusReminders
+        case .events:            return statusEvents
+        case .bluetooth:         return statusBluetooth
+        case .motion:            return statusMotion
         }
     }
     
     /// Determines whether to present the pre-permission alert.
-    public var presentPrePermissionAlert = false
+    open var presentPrePermissionAlert = false
     
     /// The pre-permission alert.
-    public lazy var prePermissionAlert: PermissionAlert = {
+    open lazy var prePermissionAlert: PermissionAlert = {
         return PrePermissionAlert(permission: self)
     }()
     
     /// The alert when the permission was denied.
-    public lazy var deniedAlert: PermissionAlert = {
+    open lazy var deniedAlert: PermissionAlert = {
         return DeniedAlert(permission: self)
     }()
     
     /// The alert when the permission is disabled.
-    public lazy var disabledAlert: PermissionAlert = {
+    open lazy var disabledAlert: PermissionAlert = {
         return DisabledAlert(permission: self)
     }()
     
@@ -142,7 +142,7 @@ public class Permission: NSObject {
      
      - returns: A newly created permission.
      */
-    private init(_ type: PermissionType) {
+    fileprivate init(_ type: PermissionType) {
         self.type = type
     }
     
@@ -151,7 +151,7 @@ public class Permission: NSObject {
      
      - parameter callback: The function to be triggered after the user responded to the request.
      */
-    public func request(callback: Callback) {
+    open func request(_ callback: @escaping Callback) {
         self.callback = callback
         
         Queue.main {
@@ -161,15 +161,15 @@ public class Permission: NSObject {
         let status = self.status
         
         switch status {
-        case .Authorized:
+        case .authorized:
             callbacks(status)
-        case .NotDetermined:
+        case .notDetermined:
             //requestInitialAuthorization()
             callbacks(status)
-        case .Denied:
+        case .denied:
             //deniedAlert.present()
             callbacks(status)
-        case .Disabled:
+        case .disabled:
             //disabledAlert.present()
             callbacks(status)
         }
@@ -180,7 +180,7 @@ public class Permission: NSObject {
      
      - parameter callback: The function to be triggered after the user responded to the request.
      */
-    public func requestWithAuthorization(callback: Callback) {
+    open func requestWithAuthorization(_ callback: @escaping Callback) {
         self.callback = callback
         
         Queue.main {
@@ -190,42 +190,42 @@ public class Permission: NSObject {
         let status = self.status
         
         switch status {
-        case .Authorized:
+        case .authorized:
             callbacks(status)
-        case .NotDetermined:
+        case .notDetermined:
             requestInitialAuthorization()
             callbacks(status)
-        case .Denied:
+        case .denied:
             deniedAlert.present()
             callbacks(status)
-        case .Disabled:
+        case .disabled:
             disabledAlert.present()
             callbacks(status)
         }
     }
     
-    private func requestInitialAuthorization() {
+    fileprivate func requestInitialAuthorization() {
         presentPrePermissionAlert ? prePermissionAlert.present() : requestAuthorization(callbacks)
     }
     
-    internal func requestAuthorization(callback: Callback) {
+    internal func requestAuthorization(_ callback: @escaping Callback) {
         switch type {
-        case .Contacts:          requestContacts(callback)
-        case .AddressBook:       requestAddressBook(callback)
-        case .LocationAlways:    requestLocationAlways(callback)
-        case .LocationWhenInUse: requestLocationWhenInUse(callback)
-        case .Notifications:     requestNotifications(callback)
-        case .Microphone:        requestMicrophone(callback)
-        case .Camera:            requestCamera(callback)
-        case .Photos:            requestPhotos(callback)
-        case .Reminders:         requestReminders(callback)
-        case .Events:            requestEvents(callback)
-        case .Bluetooth:         requestBluetooth(self.callback)
-        case .Motion:            requestMotion(self.callback)
+        case .contacts:          requestContacts(callback)
+        case .addressBook:       requestAddressBook(callback)
+        case .locationAlways:    requestLocationAlways(callback)
+        case .locationWhenInUse: requestLocationWhenInUse(callback)
+        case .notifications:     requestNotifications(callback)
+        case .microphone:        requestMicrophone(callback)
+        case .camera:            requestCamera(callback)
+        case .photos:            requestPhotos(callback)
+        case .reminders:         requestReminders(callback)
+        case .events:            requestEvents(callback)
+        case .bluetooth:         requestBluetooth(self.callback)
+        case .motion:            requestMotion(self.callback)
         }
     }
     
-    internal func callbacks(status: PermissionStatus) {
+    internal func callbacks(_ status: PermissionStatus) {
         Queue.main {
             self.callback?(status)
             self.permissionSets.forEach { $0.didRequestPermission(self) }
@@ -235,19 +235,19 @@ public class Permission: NSObject {
 
 extension Permission {
     /// The textual representation of self.
-    override public var description: String {
+    override open var description: String {
         return "\(type): \(status)"
     }
     
     /// The pretty textual representation of self. 
     internal var prettyDescription: String {
         switch type {
-        case .LocationAlways, .LocationWhenInUse:
+        case .locationAlways, .locationWhenInUse:
             return "Location"
-        case .Notifications:
+        case .notifications:
             return "Notifications"
         default:
-            return String(type)
+            return String(describing: type)
         }
     }
     
