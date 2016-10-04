@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3D42A7DB1D5F66B300236ABA /* SpeechRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D42A7DA1D5F66B300236ABA /* SpeechRecognizer.swift */; };
+		3DC217D31D6EFD4A00600DFE /* MediaLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DC217D21D6EFD4A00600DFE /* MediaLibrary.swift */; };
 		6C04FAF61CCA8F3A00B3F361 /* AddressBook.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C04FAF51CCA8F3A00B3F361 /* AddressBook.swift */; };
 		6D0069B41C1868E8002FDB42 /* PermissionSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D0069B31C1868E8002FDB42 /* PermissionSet.swift */; };
 		6D0EBDBD1BFCF8B700C35F8E /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D0EBDBC1BFCF8B700C35F8E /* Utilities.swift */; };
@@ -43,6 +45,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		3D42A7DA1D5F66B300236ABA /* SpeechRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeechRecognizer.swift; sourceTree = "<group>"; };
+		3DC217D21D6EFD4A00600DFE /* MediaLibrary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MediaLibrary.swift; sourceTree = "<group>"; };
 		6C04FAF51CCA8F3A00B3F361 /* AddressBook.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddressBook.swift; sourceTree = "<group>"; };
 		6D0069B31C1868E8002FDB42 /* PermissionSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PermissionSet.swift; sourceTree = "<group>"; };
 		6D0EBDBC1BFCF8B700C35F8E /* Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
@@ -148,6 +152,8 @@
 				6DF9C2B71C8F4F8F000710C1 /* Notifications.swift */,
 				6DF9C2BD1C8F4FE5000710C1 /* Photos.swift */,
 				6DF9C2B51C8F4F69000710C1 /* Reminders.swift */,
+				3D42A7DA1D5F66B300236ABA /* SpeechRecognizer.swift */,
+				3DC217D21D6EFD4A00600DFE /* MediaLibrary.swift */,
 			);
 			path = PermissionTypes;
 			sourceTree = "<group>";
@@ -294,10 +300,12 @@
 				6DF9C2C61C8F5B4C000710C1 /* Location.swift in Sources */,
 				6DA8B4B21BFB8AD8007A94FC /* PermissionAlert.swift in Sources */,
 				6C04FAF61CCA8F3A00B3F361 /* AddressBook.swift in Sources */,
+				3D42A7DB1D5F66B300236ABA /* SpeechRecognizer.swift in Sources */,
 				6DF9C2BE1C8F4FE5000710C1 /* Photos.swift in Sources */,
 				6DF9C2BA1C8F4FAC000710C1 /* Microphone.swift in Sources */,
 				6DF9C2BC1C8F4FDA000710C1 /* Camera.swift in Sources */,
 				6DF9C2B21C8F4F45000710C1 /* LocationAlways.swift in Sources */,
+				3DC217D31D6EFD4A00600DFE /* MediaLibrary.swift in Sources */,
 				6D86A9CD1BEBDC9000E3DD5A /* Permission.swift in Sources */,
 				6D0EBDBD1BFCF8B700C35F8E /* Utilities.swift in Sources */,
 			);
@@ -335,10 +343,8 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -385,10 +391,8 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -408,7 +412,6 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -420,7 +423,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -441,7 +443,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -453,6 +454,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = io.delba.Permission;
 				PRODUCT_NAME = Permission;
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
@@ -475,6 +477,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = io.delba.PermissionTests;
 				PRODUCT_NAME = Permission;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;

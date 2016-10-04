@@ -22,11 +22,6 @@
 // SOFTWARE.
 //
 
-internal let Application = UIApplication.shared
-internal let Defaults = UserDefaults.standard
-internal let NotificationCenter = Foundation.NotificationCenter.default
-internal let Bundle = Foundation.Bundle.main
-
 extension UIApplication {
     fileprivate var topViewController: UIViewController? {
         var vc = delegate?.window??.rootViewController
@@ -43,7 +38,7 @@ extension UIApplication {
     }
 }
 
-extension Foundation.Bundle {
+extension Bundle {
     var name: String {
         return object(forInfoDictionaryKey: "CFBundleName") as? String ?? ""
     }
@@ -54,14 +49,18 @@ extension UIControlState: Hashable {
 }
 
 internal extension String {
-    static let nsLocationWhenInUseUsageDescription = "NSLocationWhenInUseUsageDescription"
-    static let nsLocationAlwaysUsageDescription = "NSLocationAlwaysUsageDescription"
+    static let locationWhenInUseUsageDescription = "NSLocationWhenInUseUsageDescription"
+    static let locationAlwaysUsageDescription    = "NSLocationAlwaysUsageDescription"
+    static let microphoneUsageDescription        = "NSMicrophoneUsageDescription"
+    static let speechRecognitionUsageDescription = "NSSpeechRecognitionUsageDescription"
+    static let photoLibraryUsageDescription      = "NSPhotoLibraryUsageDescription"
+    static let cameraUsageDescription            = "NSCameraUsageDescription"
+    static let mediaLibraryUsageDescription      = "NSAppleMusicUsageDescription"
     
     static let requestedNotifications               = "permission.requestedNotifications"
     static let requestedLocationAlwaysWithWhenInUse = "permission.requestedLocationAlwaysWithWhenInUse"
     static let requestedMotion                      = "permission.requestedMotion"
     static let requestedBluetooth                   = "permission.requestedBluetooth"
-    
 }
 
 internal extension Selector {
@@ -114,17 +113,6 @@ extension UserDefaults {
     }
 }
 
-struct Queue {
-    static func main(_ block: @escaping ()->()) {
-        DispatchQueue.main.async(execute: block)
-    }
-    
-    static func main(after seconds: Double, block: @escaping ()->()) {
-        let time = DispatchTime.now() + Double(Int64(seconds * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)
-        DispatchQueue.main.asyncAfter(deadline: time, execute: block)
-    }
-}
-
 extension OperationQueue {
     convenience init(_ qualityOfService: QualityOfService) {
         self.init()
@@ -132,12 +120,12 @@ extension OperationQueue {
     }
 }
 
-internal extension Foundation.NotificationCenter {
-    func addObserver(_ observer: AnyObject, selector: Selector, name: String) {
-        addObserver(observer, selector: selector, name: NSNotification.Name(rawValue: name), object: nil)
+internal extension NotificationCenter {
+    func addObserver(_ observer: AnyObject, selector: Selector, name: NSNotification.Name?) {
+        addObserver(observer, selector: selector, name: name!, object: nil)
     }
     
-    func removeObserver(_ observer: AnyObject, name: String) {
-        removeObserver(observer, name: NSNotification.Name(rawValue: name), object: nil)
+    func removeObserver(_ observer: AnyObject, name: NSNotification.Name?) {
+        removeObserver(observer, name: name, object: nil)
     }
 }

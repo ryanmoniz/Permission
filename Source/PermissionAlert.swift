@@ -32,7 +32,7 @@ open class PermissionAlert {
     /// The domain of the permission.
     fileprivate var type: PermissionType { return permission.type }
     
-    fileprivate var callbacks: Permission.Callback { return permission.callbacks }
+    fileprivate var callbacks: Permission.Callback { return permission.callbackAsync }
     
     /// The title of the alert.
     open var title: String?
@@ -75,8 +75,8 @@ open class PermissionAlert {
     }
     
     internal func present() {
-        Queue.main {
-            Application.presentViewController(self.controller)
+        DispatchQueue.main.async {
+            UIApplication.shared.presentViewController(self.controller)
         }
     }
 
@@ -115,15 +115,15 @@ internal class DeniedAlert: PermissionAlert {
     }
     
     @objc func settingsHandler() {
-        NotificationCenter.removeObserver(self, name: NSNotification.Name.UIApplicationDidBecomeActive.rawValue)
+        NotificationCenter.default.removeObserver(self, name: .UIApplicationDidBecomeActive)
         callbacks(status)
     }
     
-    fileprivate func settingsHandler(_ action: UIAlertAction) {
-        NotificationCenter.addObserver(self, selector: .settingsHandler, name: NSNotification.Name.UIApplicationDidBecomeActive.rawValue)
+    private func settingsHandler(_ action: UIAlertAction) {
+        NotificationCenter.default.addObserver(self, selector: .settingsHandler, name: .UIApplicationDidBecomeActive)
         
         if let URL = URL(string: UIApplicationOpenSettingsURLString) {
-            Application.openURL(URL)
+            UIApplication.shared.openURL(URL)
         }
     }
 }
@@ -141,7 +141,7 @@ internal class PrePermissionAlert: PermissionAlert {
     override init(permission: Permission) {
         super.init(permission: permission)
         
-        title   = "\(Bundle.name) would like to access your \(permission.prettyDescription)"
+        title   = "\(Bundle.main.name) would like to access your \(permission.prettyDescription)"
         message = "Please enable access to \(permission.prettyDescription)."
         cancel  = "Cancel"
         confirm = "Confirm"

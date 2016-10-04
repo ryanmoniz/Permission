@@ -27,69 +27,77 @@ open class Permission: NSObject {
 
     /// The permission to access the user's contacts.
     @available(iOS 9.0, *)
-    open static let Contacts = Permission(.contacts)
+    open static let contacts = Permission(type: .contacts)
     
     /// The permission to access the user's address book. (Deprecated in iOS 9.0)
-    open static let AddressBook = Permission(.addressBook)
+    open static let addressBook = Permission(type: .addressBook)
     
     /// The permission to access the user's location when the app is in background.
-    open static let LocationAlways = Permission(.locationAlways)
+    open static let locationAlways = Permission(type: .locationAlways)
     
     /// The permission to access the user's location when the app is in use.
-    open static let LocationWhenInUse = Permission(.locationWhenInUse)
+    open static let locationWhenInUse = Permission(type: .locationWhenInUse)
     
     /// The permission to access the microphone.
-    open static let Microphone = Permission(.microphone)
+    open static let microphone = Permission(type: .microphone)
     
     /// The permission to access the camera.
-    open static let Camera = Permission(.camera)
+    open static let camera = Permission(type: .camera)
     
     /// The permission to access the user's photos.
-    open static let Photos = Permission(.photos)
+    open static let photos = Permission(type: .photos)
     
     /// The permission to access the user's reminders.
-    open static let Reminders = Permission(.reminders)
+    open static let reminders = Permission(type: .reminders)
     
     /// The permission to access the user's events.
-    open static let Events = Permission(.events)
+    open static let events = Permission(type: .events)
     
     /// The permission to access the user's bluetooth.
-    open static let Bluetooth = Permission(.bluetooth)
+    open static let bluetooth = Permission(type: .bluetooth)
     
     /// The permission to access the user's motion.
-    open static let Motion = Permission(.motion)
+    open static let motion = Permission(type: .motion)
     
+    /// The permission to access the user's SpeechRecognizer.
+    @available(iOS 10.0, *)
+    open static let speechRecognizer = Permission(type: .speechRecognizer)
+    
+    /// The permission to access the user's MediaLibrary.
+    @available(iOS 9.3, *)
+    open static let mediaLibrary = Permission(type: .mediaLibrary)
+
     /// The permission to send notifications.
-    open static let Notifications: Permission = {
+    open static let notifications: Permission = {
         let settings = UIUserNotificationSettings(types: [.badge, .sound, .alert], categories: nil)
-        return Permission(.notifications(settings))
+        return Permission(type: .notifications(settings))
     }()
     
     /// Variable used to retain the notifications permission.
-    fileprivate static var notifications: Permission?
+    fileprivate static var _notifications: Permission?
     
     /// The permission to send notifications.
-    
-    open static func Notifications(types: UIUserNotificationType, categories: Set<UIUserNotificationCategory>?) -> Permission {
-        let settings  = UIUserNotificationSettings(types: types, categories: categories)
-        notifications = Permission(.notifications(settings))
-        return notifications!
+    open static func notifications(types: UIUserNotificationType, categories: Set<UIUserNotificationCategory>?) -> Permission {
+        let settings   = UIUserNotificationSettings(types: types, categories: categories)
+        let permission = Permission(type: .notifications(settings))
+        _notifications = permission
+        return permission
     }
     
     /// The permission to send notifications.
-    
-    open static func Notifications(types: UIUserNotificationType) -> Permission {
-        let settings  = UIUserNotificationSettings(types: types, categories: nil)
-        notifications = Permission(.notifications(settings))
-        return notifications!
+    open static func notifications(types: UIUserNotificationType) -> Permission {
+        let settings   = UIUserNotificationSettings(types: types, categories: nil)
+        let permission = Permission(type: .notifications(settings))
+        _notifications = permission
+        return permission
     }
     
     /// The permission to send notifications.
-    
-    open static func Notifications(categories: Set<UIUserNotificationCategory>?) -> Permission {
+    open static func notifications(categories: Set<UIUserNotificationCategory>?) -> Permission {
         let settings  = UIUserNotificationSettings(types: [.badge, .sound, .alert], categories: categories)
-        notifications = Permission(.notifications(settings))
-        return notifications!
+        let permission = Permission(type: .notifications(settings))
+        _notifications = permission
+        return permission
     }
     
     /// The permission domain.
@@ -110,6 +118,8 @@ open class Permission: NSObject {
         case .events:            return statusEvents
         case .bluetooth:         return statusBluetooth
         case .motion:            return statusMotion
+        case .speechRecognizer:  return statusSpeechRecognizer
+        case .mediaLibrary:      return statusMediaLibrary
         }
     }
     
@@ -142,7 +152,7 @@ open class Permission: NSObject {
      
      - returns: A newly created permission.
      */
-    fileprivate init(_ type: PermissionType) {
+    fileprivate init(type: PermissionType) {
         self.type = type
     }
     
@@ -154,58 +164,22 @@ open class Permission: NSObject {
     open func request(_ callback: @escaping Callback) {
         self.callback = callback
         
-        Queue.main {
+        DispatchQueue.main.async {
             self.permissionSets.forEach { $0.willRequestPermission(self) }
         }
         
         let status = self.status
         
         switch status {
-        case .authorized:
-            callbacks(status)
-        case .notDetermined:
-            //requestInitialAuthorization()
-            callbacks(status)
-        case .denied:
-            //deniedAlert.present()
-            callbacks(status)
-        case .disabled:
-            //disabledAlert.present()
-            callbacks(status)
-        }
-    }
-    
-    /**
-     Requests the permission with authorization
-     
-     - parameter callback: The function to be triggered after the user responded to the request.
-     */
-    open func requestWithAuthorization(_ callback: @escaping Callback) {
-        self.callback = callback
-        
-        Queue.main {
-            self.permissionSets.forEach { $0.willRequestPermission(self) }
-        }
-        
-        let status = self.status
-        
-        switch status {
-        case .authorized:
-            callbacks(status)
-        case .notDetermined:
-            requestInitialAuthorization()
-            callbacks(status)
-        case .denied:
-            deniedAlert.present()
-            callbacks(status)
-        case .disabled:
-            disabledAlert.present()
-            callbacks(status)
+        case .authorized:    callbackAsync(status)
+        case .notDetermined: callbackAsync(status)//requestInitialAuthorization()
+        case .denied:        callbackAsync(status)//deniedAlert.present()
+        case .disabled:      callbackAsync(status)//disabledAlert.present()
         }
     }
     
     fileprivate func requestInitialAuthorization() {
-        presentPrePermissionAlert ? prePermissionAlert.present() : requestAuthorization(callbacks)
+        presentPrePermissionAlert ? prePermissionAlert.present() : requestAuthorization(callbackAsync)
     }
     
     internal func requestAuthorization(_ callback: @escaping Callback) {
@@ -222,12 +196,14 @@ open class Permission: NSObject {
         case .events:            requestEvents(callback)
         case .bluetooth:         requestBluetooth(self.callback)
         case .motion:            requestMotion(self.callback)
+        case .speechRecognizer:  requestSpeechRecognizer(callback)
+        case .mediaLibrary:      requestMediaLibrary(callback)
         }
     }
     
-    internal func callbacks(_ status: PermissionStatus) {
-        Queue.main {
-            self.callback?(status)
+    internal func callbackAsync(_ with: PermissionStatus) {
+        DispatchQueue.main.async {
+            self.callback?(self.status)
             self.permissionSets.forEach { $0.didRequestPermission(self) }
         }
     }

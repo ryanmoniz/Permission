@@ -28,7 +28,7 @@ private let MotionManager = CMMotionActivityManager()
 
 extension Permission {
     var statusMotion: PermissionStatus {
-        if Defaults.requestedMotion {
+        if UserDefaults.standard.requestedMotion {
             return synchronousStatusMotion
         }
         
@@ -36,11 +36,11 @@ extension Permission {
     }
     
     func requestMotion(_ callback: Callback?) {
-        Defaults.requestedMotion = true
+        UserDefaults.standard.requestedMotion = true
         
         let now = Date()
-        let mainOp = OperationQueue.main
-        MotionManager.queryActivityStarting(from: now, to: now, to: mainOp) { activities, error in
+        
+        MotionManager.queryActivityStarting(from: now, to: now, to: OperationQueue.main) { activities, error in
             let status: PermissionStatus
             
             if  let error = error , error._code == Int(CMErrorMotionActivityNotAuthorized.rawValue) {
@@ -75,7 +75,7 @@ extension Permission {
         }
         
         
-        semaphore.wait(timeout: DispatchTime.distantFuture)
+        _ = semaphore.wait(timeout: DispatchTime.distantFuture)
         
         return status
     }

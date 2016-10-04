@@ -1,5 +1,5 @@
 //
-// LocationAlways.swift
+// MediaLibrary.swift
 //
 // Copyright (c) 2015-2016 Damien (http://delba.io)
 //
@@ -22,33 +22,32 @@
 // SOFTWARE.
 //
 
-import CoreLocation
+import MediaPlayer
 
 internal extension Permission {
-    var statusLocationAlways: PermissionStatus {
-        guard CLLocationManager.locationServicesEnabled() else { return .disabled }
-        
-        let status = CLLocationManager.authorizationStatus()
+    var statusMediaLibrary: PermissionStatus {
+        guard #available(iOS 9.3, *) else { fatalError() }
+
+        let status = MPMediaLibrary.authorizationStatus()
         
         switch status {
-        case .authorizedAlways: return .authorized
-        case .authorizedWhenInUse:
-            return UserDefaults.standard.requestedLocationAlwaysWithWhenInUse ? .denied : .notDetermined
-        case .notDetermined: return .notDetermined
+        case .authorized:          return .authorized
         case .restricted, .denied: return .denied
+        case .notDetermined:       return .notDetermined
         }
     }
     
-    func requestLocationAlways(_ callback: Callback) {
-        guard let _ = Foundation.Bundle.main.object(forInfoDictionaryKey: .locationAlwaysUsageDescription) else {
-            print("WARNING: \(.locationAlwaysUsageDescription) not found in Info.plist")
+    func requestMediaLibrary(_ callback: @escaping Callback) {
+        guard #available(iOS 9.3, *) else { fatalError() }
+        
+        guard let _ = Bundle.main.object(forInfoDictionaryKey: .mediaLibraryUsageDescription) else {
+            print("WARNING: \(.mediaLibraryUsageDescription) not found in Info.plist")
             return
         }
-        
-        if CLLocationManager.authorizationStatus() == .authorizedWhenInUse {
-            UserDefaults.standard.requestedLocationAlwaysWithWhenInUse = true
+
+        MPMediaLibrary.requestAuthorization { _ in
+            callback(self.statusMediaLibrary)
         }
-        
-        LocationManager.request(self)
     }
 }
+

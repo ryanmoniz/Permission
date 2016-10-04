@@ -25,7 +25,7 @@
 import CoreBluetooth
 
 internal let BluetoothManager = CBPeripheralManager(
-    delegate: Permission.Bluetooth,
+    delegate: Permission.bluetooth,
     queue: nil,
     options: [CBPeripheralManagerOptionShowPowerAlertKey: false]
 )
@@ -47,7 +47,7 @@ extension Permission {
     }
     
     func requestBluetooth(_ callback: Callback?) {
-        Defaults.requestedBluetooth = true
+        UserDefaults.standard.requestedBluetooth = true
         
         BluetoothManager.request(self)
     }
