@@ -162,9 +162,9 @@ public class Permission: NSObject {
         
         switch status {
         case .Authorized:    callbacks(status)
-        case .NotDetermined: requestInitialAuthorization()
-        case .Denied:        deniedAlert.present()
-        case .Disabled:      disabledAlert.present()
+        case .NotDetermined: callbacks(status)//requestInitialAuthorization()
+        case .Denied:        callbacks(status)//deniedAlert.present()
+        case .Disabled:      callbacks(status)//disabledAlert.present()
         }
     }
     
