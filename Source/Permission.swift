@@ -168,7 +168,7 @@ public class Permission: NSObject {
         }
     }
     
-    private func requestInitialAuthorization() {
+    public func requestInitialAuthorization() {
         presentPrePermissionAlert ? prePermissionAlert.present() : requestAuthorization(callbacks)
     }
     
