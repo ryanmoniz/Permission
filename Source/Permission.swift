@@ -76,6 +76,10 @@ public class Permission: NSObject {
         return notifications!
     }
     
+    public func initialAuth() {
+        requestInitialAuthorization()
+    }
+    
     /// The permission to send notifications.
     @warn_unused_result
     public static func Notifications(types types: UIUserNotificationType) -> Permission {
@@ -166,10 +170,6 @@ public class Permission: NSObject {
         case .Denied:        callbacks(status)//deniedAlert.present()
         case .Disabled:      callbacks(status)//disabledAlert.present()
         }
-    }
-    
-    public func initialAuth() {
-        requestInitialAuthorization()
     }
     
     public func requestInitialAuthorization() {
