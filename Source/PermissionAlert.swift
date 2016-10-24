@@ -74,7 +74,7 @@ public class PermissionAlert {
         self.permission = permission
     }
     
-    internal func present() {
+    public func present() {
         Queue.main {
             Application.presentViewController(self.controller)
         }
